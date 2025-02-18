@@ -2,10 +2,6 @@
 
 This project facilitates decentralized image upload and sharing on the blockchain using Solidity for the smart contract and React for the front-end interface. It enables users to securely upload images to IPFS (InterPlanetary File System) and share access with specified users through smart contract functionality.
 
-Here is the video in English - [Decentralize Google Drive](https://youtu.be/M-KRLlHG_zs?si=rD7I-fH-P8kGiwwf)
-
-Here is the video in Hindi - [Decentralize Google Drive](https://youtu.be/fghqq3-P3x0?si=CVMpHFTW3-fa3R3A)
-
 ## Features
 
 - **Decentralized Storage:** Images are uploaded to IPFS, ensuring decentralized and immutable storage.
@@ -25,7 +21,7 @@ Here is the video in Hindi - [Decentralize Google Drive](https://youtu.be/fghqq3
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/decentralized-image-upload.git
+   git clone https://github.com/rajshah075/ipd-file-sharing-system-using-blockchain.git
    ```
 2. Install dependencies for the hardhat:
 
