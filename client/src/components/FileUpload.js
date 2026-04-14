@@ -1,6 +1,8 @@
+import React from 'react';
 import { useState } from "react";
 import axios from "axios";
 import "./FileUpload.css";
+//import env from "hardhat";
 
 const FileUpload = ({ contract, account, provider }) => {
   const [file, setFile] = useState(null);
@@ -20,25 +22,27 @@ const FileUpload = ({ contract, account, provider }) => {
           url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
           data: formData,
           headers: {
-            pinata_api_key:process.env.PINATA_API_KEY,
-            pinata_secret_api_key: process.env.PINATA_SECRET_API_KEY,
+            pinata_api_key: process.env.REACT_APP_PINATA_API_KEY,
+            pinata_secret_api_key: process.env.REACT_APP_PINATA_SECRET_API_KEY,
             "Content-Type": "multipart/form-data",
           },
         });
 
-        const ImgHash = `https://gateway.pinata.cloud/ipfs/${resFile.data.IpfsHash}`;
-        await contract.add(account, ImgHash);
-        setUrl(ImgHash);
+        const fileUrl = `https://gateway.pinata.cloud/ipfs/${resFile.data.IpfsHash}`;
+        const dataToStore = `${file.type}::${fileUrl}`;
+        await contract.add(account, dataToStore);
+        setUrl(fileUrl);
 
-        const hashResponse = await axios.post("http://localhost:5000/hash", { data: ImgHash });
+        const hashResponse = await axios.post("http://localhost:5000/hash", { data: fileUrl });
         const hashedData = hashResponse.data.hash;
 
         setFileHash(hashedData);
-        alert("Successfully Uploaded Image");
-        setFileName("No image selected");
+        alert("Successfully Uploaded File");
+        setFileName("No file selected");
         setFile(null);
       } catch (e) {
-        alert("Unable to upload image to Pinata");
+        console.error("Pinata Upload Error:", e.response ? e.response.data : e.message);
+        alert(`Unable to upload file to Pinata: ${e.response ? e.response.data.error || e.message : e.message}`);
       }
     }
   };
@@ -55,31 +59,46 @@ const FileUpload = ({ contract, account, provider }) => {
   };
 
   return (
-    <div className="top">
-      <form className="form" onSubmit={handleSubmit}>
-        <label htmlFor="file-upload" className="choose">
-          Choose File
-        </label>
-        <input
-          disabled={!account}
-          type="file"
-          id="file-upload"
-          name="data"
-          onChange={retrieveFile}
-        />
-        <span className="textArea">File: {fileName}</span>
-        <button type="submit" className="upload" disabled={!file}>
-          Upload File
-        </button>
-      </form>
-      {fileHash && (
-        <div className="hash-display">
-          <p>Uploaded File Hash:</p>
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {fileHash}
-          </a>
+    <div className="upload-container">
+      <div className="upload-card glassmorphic">
+        <div className="upload-header">
+          <h3 className="upload-title">Secure File Upload</h3>
+          <p className="upload-subtitle">Pin your files to IPFS & Blockchain</p>
         </div>
-      )}
+
+        <form className="upload-form" onSubmit={handleSubmit}>
+          <div className="file-drop-zone">
+            <div className="drop-icon">☁️</div>
+            <label htmlFor="file-upload" className="btn-secondary">
+              Browse Local Files
+            </label>
+            <input
+              disabled={!account}
+              type="file"
+              id="file-upload"
+              name="data"
+              onChange={retrieveFile}
+            />
+            <p className="selected-file-name">
+              {fileName !== "No file selected" ? fileName : "No file chosen"}
+            </p>
+          </div>
+          
+          <button type="submit" className="btn-primary" disabled={!file} style={{ width: '100%', marginTop: '20px' }}>
+            Encrypt & Upload
+          </button>
+        </form>
+
+        {fileHash && (
+          <div className="hash-display">
+            <div className="success-icon">✅</div>
+            <p className="hash-label">Transaction Hash:</p>
+            <a href={url} target="_blank" rel="noopener noreferrer" className="hash-link" title={fileHash}>
+              {fileHash}
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

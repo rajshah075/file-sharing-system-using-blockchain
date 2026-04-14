@@ -1,84 +1,125 @@
 .modalBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.2);
-  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modalContainer {
-  width: 500px;
-  height: 200px;
-  border-radius: 12px;
-  background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  width: 100%;
+  max-width: 450px;
+  background: rgba(11, 14, 20, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  padding: 25px;
+  gap: 24px;
 }
 
-.modalContainer {
-  display: inline-block;
-  text-align: center;
-}
-.title {
-  display: inline-block;
-  text-align: center;
+.titleRoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 16px;
 }
 
-.titleCloseBtn {
+.titleRoot h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+.bodyContent label,
+.sharedList label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--accent-glow);
+}
+
+.modal-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-select option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 10px;
+}
+
+.footerActions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.titleCloseBtn button {
-  background-color: transparent;
-  border: none;
-  font-size: 1px;
-  cursor: pointer;
-}
-
-.modalContainer .body {
-  flex: 50%;
+.footerActions .btn-primary,
+.footerActions .btn-secondary {
+  padding: 0 24px;
+  font-size: 15px;
+  height: 46px;
+  min-width: 140px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 1.7rem;
-  text-align: center;
+  justify-content: center;
 }
 
-.modalContainer .footer {
-  flex: 20%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modalContainer .footer button {
-  width: 100px;
-  height: 35px;
-  margin: 10px;
+.footerActions .btn-primary {
+  background: linear-gradient(135deg, var(--accent-glow), #3B82F6);
   border: none;
-  background-color: cornflowerblue;
-  color: white;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#cancelBtn {
-  background-color: crimson;
-}
-.address {
-  display: block;
-  margin: auto;
-  height: 30px;
-  width: 330px;
-  text-align: center;
-}
-
-input[type="text"]:focus {
-  background-color: lightblue;
 }

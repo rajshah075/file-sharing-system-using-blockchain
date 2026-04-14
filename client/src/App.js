@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ethers } from "ethers";
 import FileUpload from "./components/FileUpload";
 import Display from "./components/Display";
@@ -10,6 +10,7 @@ function App() {
   const [contract, setContract] = useState(null);
   const [provider, setProvider] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [errorStatus, setErrorStatus] = useState("");
 
   const abi = [
     {
@@ -102,72 +103,87 @@ function App() {
     }
   ]
 
-  useEffect(() => {
-    console.log(window.ethereum);
-    const pv = new ethers.providers.Web3Provider(window.ethereum);
-    console.log(pv);
-    setProvider(pv);
+  const connectWallet = async () => {
+    try {
+      if (window.ethereum) {
+        const pv = new ethers.providers.Web3Provider(window.ethereum);
+        setProvider(pv);
 
-    const loadProvider = async () => {
-      if (pv) {
-        window.ethereum.on("chainChanged", () => {
-          window.location.reload();
-        });
+        // NOTE: Optional reloads on event.
+        // window.ethereum.on("chainChanged", () => window.location.reload());
+        // window.ethereum.on("accountsChanged", () => window.location.reload());
 
-        window.ethereum.on("accountsChanged", () => {
-          window.location.reload();
-        });
         await pv.send("eth_requestAccounts", []);
         const signer = pv.getSigner();
         const address = await signer.getAddress();
         setAccount(address);
-        let contractAddress = "0x849B5D41b43fd2083d6AAaDEe16232273882e37A";
 
-        const contract = new ethers.Contract(
-          contractAddress,
-          abi,
-          signer
-        );
-        //console.log(contract);
+        const contractAddress = "0x9FE2bb8E48c822F6D7B081651B1E3f0E741aCf3C";
+        const contract = new ethers.Contract(contractAddress, abi, signer);
         setContract(contract);
-        setProvider(pv);
       } else {
-        console.error("Metamask is not installed");
+        setErrorStatus("MetaMask is not installed");
       }
-    };
-    pv && loadProvider();
-  }, []);
-  return (
-    <>
-      {!modalOpen && (
-        <button className="share" onClick={() => setModalOpen(true)}>
-          Share
-        </button>
-      )}
-      {modalOpen && <Modal setModalOpen={setModalOpen} contract={contract}></Modal>}
-  
-      <div className="App">
-        <h1 style={{ color: "white" }}>Decentralize File System</h1>
-        <div className="bg"></div>
-        <div className="bg bg2"></div>
-        <div className="bg bg3"></div>
-  
-        <p style={{ color: "white" }}>
-          Account : {account ? account : "Not connected"}
-        </p>
-  
-        {/* Add a conditional render to check for contract/provider availability */}
-        {provider && contract ? (
-          <>
-            <FileUpload account={account} provider={provider} contract={contract} />
-            <Display contract={contract} account={account} />
-          </>
-        ) : (
-          <p>Loading provider and contract...</p> // Add loading feedback
-        )}
-      </div>
-    </>
-  );  
-}
+    } catch (err) {
+      console.error(err);
+      setErrorStatus("Error connecting to MetaMask. Check console.");
+    }
+  };
 
+  return (
+    <div className="App dark-mode">
+      <div className="orb orb-1"></div>
+      <div className="orb orb-2"></div>
+      <div className="orb orb-3"></div>
+
+      <nav className="navbar">
+        <div className="nav-logo">
+          <h2>Decentralized Vault</h2>
+        </div>
+        <div className="nav-actions">
+          {account ? (
+            <>
+              <div className="account-pill">
+                <span className="dot active"></span>
+                <span className="account-text">{account}</span>
+              </div>
+              <button className="btn-primary share-nav-btn" onClick={() => setModalOpen(true)}>
+                Share Access
+              </button>
+            </>
+          ) : (null
+            // { <button className="btn-primary connect-nav-btn" onClick={connectWallet}>
+            //   Connect Wallet
+            // </button> }
+          )}
+        </div>
+      </nav>
+
+      {modalOpen && <Modal setModalOpen={setModalOpen} contract={contract} />}
+
+      <main className="main-content">
+        {errorStatus && <div className="error-alert">{errorStatus}</div>}
+
+        {provider && contract ? (
+          <div className="dashboard-container">
+            <section className="upload-section">
+              <FileUpload account={account} provider={provider} contract={contract} />
+            </section>
+            <section className="display-section">
+              <Display contract={contract} account={account} />
+            </section>
+          </div>
+        ) : (
+          <div className="hero-section">
+            <h1 className="hero-title">A Secure Digital File System.</h1>
+            <p className="hero-subtitle">Upload, view, and share your files effortlessly on the blockchain.</p>
+            <button className="btn-primary large" onClick={connectWallet}>
+              Connect Wallet to Start
+            </button>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
 export default App;
